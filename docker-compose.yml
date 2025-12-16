@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  ml_service:
+    build: ./service
+    ports:
+      - "8001:8000"
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - ml_service
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  alert_receiver:
+    build: ./receiver
+    ports:
+      - "8081:8081"
